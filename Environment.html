@@ -1,0 +1,163 @@
+<!-- CSS Imports -->
+<head>
+<link rel="stylesheet" href="css/style.css" />
+<link href="https://stackpath.bootstrapcdn.com/bootswatch/4.1.0/lux/bootstrap.min.css" rel="stylesheet" integrity="sha384-mDdzqEimigFhaXpqHTnkj2JumLRbFB9qEVJK77zv7lBrdvhyPgl0WaWE7jloVkek" crossorigin="anonymous">
+</head>
+
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="C:\Users\jpben\Documents\GitHub\Mapbox_tutorials\Add_Points_Web_Map\initial.html">Santiago De Queretaro</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation" style="">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarColor02">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="C:\Users\jpben\Documents\GitHub\Mapbox_tutorials\Add_Points_Web_Map\Project_Description.html">Project Description <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="C:\Users\jpben\Documents\GitHub\Mapbox_tutorials\Add_Points_Web_Map\index.html">Socieconomic Map</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="C:\Users\jpben\Documents\GitHub\Mapbox_tutorials\Add_Points_Web_Map\Environment.html">Environmental Map</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+
+
+<!-- Set up the document by adding Mapbox GL JS and its associated CSS file in the header-->
+
+<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.2/mapbox-gl.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.2/mapbox-gl.css' rel='stylesheet' />
+
+
+<style>
+    #menu {
+        background: #fff;
+        position: absolute;
+        z-index: 1;
+        top: 100px;
+        right: 10px;
+        border-radius: 3px;
+        width: 150px;
+        border: 1px solid rgba(0,0,0,0.4);
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    #menu a {
+        font-size: 13px;
+        color: #404040;
+        display: block;
+        margin: 0;
+        padding: 0;
+        padding: 10px;
+        text-decoration: none;
+        border-bottom: 1px solid rgba(0,0,0,0.25);
+        text-align: center;
+    }
+
+    #menu a:last-child {
+        border: none;
+    }
+
+    #menu a:hover {
+        background-color: #f8f8f8;
+        color: #404040;
+    }
+
+    #menu a.active {
+        background-color: #3887be;
+        color: #ffffff;
+    }
+
+    #menu a.active:hover {
+        background: #3074a4;
+    }
+</style>
+
+<nav id="menu"></nav>
+<div id="map"></div>
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiYmVnb256IiwiYSI6ImNqZmQ2ZTZ3MDI1aGQ0MHE3NmI2YWR4N3QifQ.75ivLtj_reF_P3YWARrTng';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/begonz/cjgxu45kn000z2ro2ilwcsxb4',
+    zoom: 10,
+    center: [-100.416571, 20.618710]
+});
+
+map.on('load', function () {
+    map.addSource('Pollution_Points', {
+        type: 'vector',
+        url: 'mapbox://begonz.89oyfvee'});
+    map.addLayer({
+      'id': 'Pollution_Points',
+      'type': 'circle',
+      'source': 'Pollution_Points',
+      'layout': {
+            'visibility': 'visible'
+        },
+        'paint': {
+            'circle-radius': 3,
+            'circle-color': 'rgba(255,0,0,0.9)'
+        },
+        'source-layer': 'Pollution_Points-6skb78'});
+
+        map.addSource('Waterways', {
+            type: 'vector',
+            url: 'mapbox://begonz.4wfvc01g'});
+          map.addLayer({
+            'id': 'Waterways',
+            'type': 'line',
+            'source': 'Waterways',
+            'source-layer': 'Waterways-aokez7',
+            'layout': {
+                'visibility': 'visible',
+                'line-join': 'round',
+                'line-cap': 'round'
+            },
+            'paint': {
+                'line-color': 'rgba(0,128,128,1)',
+                'line-width': 3}
+              });
+
+});
+
+var toggleableLayerIds = [ 'Pollution_Points','Waterways'];
+
+for (var i = 0; i < toggleableLayerIds.length; i++) {
+    var id = toggleableLayerIds[i];
+
+    var link = document.createElement('a');
+    link.href = '#';
+    link.className = 'active';
+    link.textContent = id;
+
+    link.onclick = function (e) {
+        var clickedLayer = this.textContent;
+        e.preventDefault();
+        e.stopPropagation();
+
+        var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
+
+        if (visibility === 'visible') {
+            map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+            this.className = '';
+        } else {
+            this.className = 'active';
+            map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+        }
+    };
+
+    var layers = document.getElementById('menu');
+    layers.appendChild(link);
+}
+
+</script>
+
+</body>
+</html>

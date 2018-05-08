@@ -1,0 +1,138 @@
+
+<!-- CSS Imports -->
+<head>
+<link rel="stylesheet" href="css/style.css" />
+<link href="https://stackpath.bootstrapcdn.com/bootswatch/4.1.0/lux/bootstrap.min.css" rel="stylesheet" integrity="sha384-mDdzqEimigFhaXpqHTnkj2JumLRbFB9qEVJK77zv7lBrdvhyPgl0WaWE7jloVkek" crossorigin="anonymous">
+</head>
+
+<!-- markup the page to create a map container, an info box, and a legend-->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="C:\Users\jpben\Documents\GitHub\Mapbox_tutorials\Add_Points_Web_Map\initial.html">Santiago De Queretaro</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation" style="">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarColor02">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="C:\Users\jpben\Documents\GitHub\Mapbox_tutorials\Add_Points_Web_Map\Project_Description.html">Project Description <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="C:\Users\jpben\Documents\GitHub\Mapbox_tutorials\Add_Points_Web_Map\index.html">Socieconomic Map</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="C:\Users\jpben\Documents\GitHub\Mapbox_tutorials\Add_Points_Web_Map\Environment.html">Environmental Map</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Set up the document by adding Mapbox GL JS and its associated CSS file in the header-->
+
+<script src='https://api.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
+
+
+<div id='map'></div>
+<div class='map-overlay' id='features'><h3><center>Santiago de Queretaro's AGEBs<center></h3><div id='pd'><br><h4><center>Hover over an AGEB<center></h4></div></div>
+<div class='map-overlay' id='legend'></div>
+
+<div class="sidebar">
+<h2>Poverty in Querétaro</h2>
+<p>
+A critical element in the neighborhood selection and analysis process was the measure of social deprivation through income prediction.
+</p>
+<br>
+
+<p>
+To unveil some the socioeconomic challenges of different communities, the team relied in the indicators from the “Indice de Rezago Social”, which stands for social deprivation index, as predictors of income in a linear regression.
+</p>
+<br>
+
+<p>
+This index defines social deprivation by looking at multiple indicators such as:
+</p>
+<br>
+<p>
+  •    Percentage of the population with basic education incomplete.
+</p>
+<br>
+<p>
+  •    Percentage of the population without access to health services.
+</p>
+<br>
+<p>
+  •    Percentage of the houses with dirt floor.
+</p>
+<br>
+<p>
+Since the Census does not report on Income, the team built a linear regression using Intercensus Survey data from 2015, which reports on income and also the social deprivation indicators.
+</p>
+<br>
+<p>
+Finally, the team used the coefficients from the regression with data from the Census to define an income measure for all the AGEBs (geographic unit comparable to census tracts) in the city and determine the ones among the lowest quantiles.
+</p>
+<br>
+<p>
+This process allowed to predict an income measure for the neighborhoods and exposed the fact that poverty is not concentrated in just one area of the city.
+</p>
+</div>
+
+<script>
+
+mapboxgl.accessToken = 'pk.eyJ1IjoiYmVnb256IiwiYSI6ImNqZmQ2ZTZ3MDI1aGQ0MHE3NmI2YWR4N3QifQ.75ivLtj_reF_P3YWARrTng';
+
+var map = new mapboxgl.Map({
+  container: 'map', // container id
+  style: 'mapbox://styles/begonz/cjg8aaup617ti2slnqubwo3wt' // replace this with your style URL
+});
+
+
+
+map.on('load', function() {
+  var layers = ['3,910', '4,801','5,225', '5,898', '6,401'];
+  var colors = ['#EF4DA9', '#EF4DA9', '#EF4DA9', '#EF4DA9', '#EF4DA9'];
+  var opacities=[1,0.8,0.6,0.4,0.2];
+  // the rest of the code will go in here
+  for (i = 0; i < layers.length; i++) {
+    var layer = layers[i];
+    var color = colors[i];
+    var opacity=opacities[i];
+    var item = document.createElement('div');
+    var key = document.createElement('span');
+    key.className = 'legend-key';
+    key.style.backgroundColor = color;
+    key.style.opacity=opacity;
+
+    var value = document.createElement('span');
+    value.innerHTML = layer;
+    item.appendChild(key);
+    item.appendChild(value);
+    legend.appendChild(item);
+  }
+
+  map.on('mousemove', function(e) {
+    var Agebs = map.queryRenderedFeatures(e.point, {
+      layers: ['shapefile-5850pw']
+    });
+
+    if (Agebs.length > 0) {
+      document.getElementById('pd').innerHTML = '<br><strong><h4>Income prediction:</strong> MXN $ ' + (Math.round(Agebs[0].properties.Regression)).toLocaleString()+
+      ' </h4><strong><h4>Total population:</strong>' +
+      (Math.round(Agebs[0].properties.pob_tot)).toLocaleString() + '</h5>';
+    } else {
+      document.getElementById('pd').innerHTML = '<br><h4><center> Hover over an AGEB!</center></h4>';
+    }
+  });
+
+map.getCanvas().style.cursor = 'default';
+
+
+
+});
+
+// Add zoom and rotation controls to the map.
+map.addControl(new mapboxgl.NavigationControl(),'bottom-right');
+
+
+
+</script>
